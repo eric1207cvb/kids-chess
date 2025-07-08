@@ -1,0 +1,22 @@
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #333;
+}
+
+#xiangqi-board {
+  /* 讓寬高比固定為 9:10 */
+  width: 72vmin; 
+  height: 80vmin;
+  
+  /* 核心：將 SVG 設置為背景 */
+  background-image: url('board.svg');
+  background-size: cover; /* 讓背景圖完整覆蓋容器 */
+  
+  /* 核心：建立 9x10 的透明網格來定位棋子 */
+  display: grid;
+  grid-template-columns: repeat(9, 1fr); /* 9 列 */
+  grid-template-rows: repeat(10, 1fr);  /* 10 行 */
+}
