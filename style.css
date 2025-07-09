@@ -1,22 +1,64 @@
 body {
+  margin: 0;
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: #333;
+  background-color: #f5f5f5;
+  font-family: 'KaiTi', 'STKaiti', 'SimSun', serif;
 }
-
 #xiangqi-board {
-  /* 讓寬高比固定為 9:10 */
   width: 72vmin; 
   height: 80vmin;
-  
-  /* 核心：將 SVG 設置為背景 */
-  background-image: url('board.svg');
-  background-size: cover; /* 讓背景圖完整覆蓋容器 */
-  
-  /* 核心：建立 9x10 的透明網格來定位棋子 */
+  background-image: url('board.svg'), url('https://www.transparenttextures.com/patterns/wood-pattern.png');
+  background-size: cover, auto;
+  background-position: center, center;
+  background-repeat: no-repeat, repeat;
+  background-color: #d3b890;
   display: grid;
-  grid-template-columns: repeat(9, 1fr); /* 9 列 */
-  grid-template-rows: repeat(10, 1fr);  /* 10 行 */
+  grid-template-columns: repeat(9, 1fr);
+  grid-template-rows: repeat(10, 1fr);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+.piece {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 88%; 
+  height: 88%;
+  justify-self: center;
+  align-self: center;
+  border-radius: 50%;
+  font-size: 6vmin;
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+  border-bottom: 4px solid rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: all 0.15s ease-out;
+}
+.piece:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    border-bottom-width: 6px;
+}
+.black-piece {
+    background-color: #333;
+    color: #fff;
+    border-top: 1px solid #777;
+}
+.red-piece {
+    background-color: #c0392b;
+    color: #fff;
+    border-top: 1px solid #ff796a;
+}
+.piece.selected {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 0 0 4px #f1c40f, 0 6px 12px rgba(0,0,0,0.3);
+}
+.square {
+    /* 確保格子本身是透明且可點擊的 */
+    width: 100%;
+    height: 100%;
 }

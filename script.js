@@ -1,25 +1,83 @@
-// 首先，透過 id 找到我們在 HTML 中建立的棋盤容器
-const chessboard = document.getElementById('chessboard');
+const gameBoard = document.getElementById('xiangqi-board');
 
-// 我們需要 8x8=64 個格子，所以用一個迴圈跑 64 次
-for (let i = 0; i < 64; i++) {
-  
-  // 1. 建立一個新的 <div> 元素，這就是每一個小方格
-  const square = document.createElement('div');
-  
-  // 2. 計算這個格子在第幾行 (row) 第幾列 (col)
-  // Math.floor 是取整數，% 是取餘數
-  const row = Math.floor(i / 8);
-  const col = i % 8;
-  
-  // 3. 判斷這個格子應該是深色還是淺色
-  // 如果 (行+列) 是偶數，就給它淺色；如果是奇數，就給它深色
-  if ((row + col) % 2 === 0) {
-    square.classList.add('light'); // 加上 'light' class
-  } else {
-    square.classList.add('dark'); // 加上 'dark' class
-  }
-  
-  // 4. 最後，把這個建立好的方格，放進棋盤容器裡
-  chessboard.appendChild(square);
+let boardData = [
+    ['車', '馬', '象', '士', '將', '士', '象', '馬', '車'],
+    ['', '', '', '', '', '', '', '', ''],
+    ['', '砲', '', '', '', '', '', '砲', ''],
+    ['卒', '', '卒', '', '卒', '', '卒', '', '卒'],
+    ['', '', '', '', '', '', '', '', ''],
+    ['', '', '', '', '', '', '', '', ''],
+    ['兵', '', '兵', '', '兵', '', '兵', '', '兵'],
+    ['', '炮', '', '', '', '', '', '炮', ''],
+    ['', '', '', '', '', '', '', '', ''],
+    ['俥', '傌', '相', '仕', '帥', '仕', '相', '傌', '俥']
+];
+
+let selectedPiece = null; 
+let isRedTurn = true; 
+
+function createBoard() {
+    gameBoard.innerHTML = ''; 
+    boardData.forEach((row, rowIndex) => {
+        row.forEach((pieceChar, colIndex) => {
+            const square = document.createElement('div');
+            square.classList.add('square');
+            square.style.gridRowStart = rowIndex + 1;
+            square.style.gridColumnStart = colIndex + 1;
+
+            if (pieceChar) {
+                const piece = document.createElement('div');
+                piece.classList.add('piece');
+                piece.innerText = pieceChar;
+                const isRed = isRedPiece(pieceChar);
+                piece.classList.add(isRed ? 'red-piece' : 'black-piece');
+                if (selectedPiece && selectedPiece.row === rowIndex && selectedPiece.col === colIndex) {
+                    piece.classList.add('selected');
+                }
+                square.appendChild(piece);
+            }
+            square.addEventListener('click', () => handleSquareClick(rowIndex, colIndex));
+            gameBoard.appendChild(square);
+        });
+    });
 }
+
+function handleSquareClick(row, col) {
+    if (row === 4 || row === 5) return;
+    const pieceChar = boardData[row][col];
+    if (selectedPiece) {
+        const targetIsRed = pieceChar ? isRedPiece(pieceChar) : null;
+        const selectedIsRed = isRedPiece(boardData[selectedPiece.row][selectedPiece.col]);
+        if (targetIsRed === selectedIsRed && pieceChar) {
+            selectPiece(row, col);
+        } else {
+            movePiece(selectedPiece.row, selectedPiece.col, row, col);
+            selectedPiece = null; 
+            isRedTurn = !isRedTurn; 
+        }
+    } else if (pieceChar) {
+        const isRed = isRedPiece(pieceChar);
+        if (isRed === isRedTurn) {
+            selectPiece(row, col);
+        }
+    }
+}
+
+function isRedPiece(char) {
+    const redPieces = ['帥', '仕', '相', '俥', '傌', '炮', '兵'];
+    return redPieces.includes(char);
+}
+
+function selectPiece(row, col) {
+    selectedPiece = { row, col };
+    createBoard();
+}
+
+function movePiece(fromRow, fromCol, toRow, toCol) {
+    const pieceToMove = boardData[fromRow][fromCol];
+    boardData[toRow][toCol] = pieceToMove;
+    boardData[fromRow][fromCol] = '';
+    createBoard();
+}
+
+createBoard();
