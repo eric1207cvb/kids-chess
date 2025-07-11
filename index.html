@@ -3,11 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>象棋專案 (最終版)</title>
+    <title>象棋專案 (重構版)</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="xiangqi-board"></div>
+    <!-- 主容器 -->
+    <div id="game-container">
+        <!-- 新增的遊戲訊息欄 -->
+        <div id="game-info">紅方先行</div>
+        <!-- 棋盤 -->
+        <div id="xiangqi-board"></div>
+        <!-- (可選) 新增一個重新開始的按鈕 -->
+        <button id="restart-button">重新開始</button>
+    </div>
     <script src="script.js"></script>
 </body>
 </html>
