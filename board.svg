@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 90 100">
+  <defs>
+    <style>
+      .river-text {
+        font-size: 8px;
+        font-family: 'STSong', 'SimSun', serif;
+        fill: #000;
+        fill-opacity: 0.4;
+        text-anchor: middle;
+      }
+    </style>
+  </defs>
+  <g fill="transparent" stroke="#000000" stroke-opacity="0.6" stroke-width=".3">
+    <rect x="5" y="5" width="80" height="90"/>
+    
+    <path d="M5,15 h80 M5,25 h80 M5,35 h80 M5,45 h80 M5,55 h80 M5,65 h80 M5,75 h80 M5,85 h80"/>
+    
+    <path d="M5,5 v40 M15,5 v40 M25,5 v40 M35,5 v40 M45,5 v40 M55,5 v40 M65,5 v40 M75,5 v40 M85,5 v40"/>
+    <path d="M5,55 v40 M15,55 v40 M25,55 v40 M35,55 v40 M45,55 v40 M55,55 v40 M65,55 v40 M75,55 v40 M85,55 v40"/>
+    
+    <path d="M35,5 l20,20 M55,5 l-20,20 M35,75 l20,20 M55,75 l-20,20"/>
+  </g>
+  <text x="25" y="52" class="river-text">楚</text>
+  <text x="35" y="52" class="river-text">河</text>
+  <text x="55" y="52" class="river-text">漢</text>
+  <text x="65" y="52" class="river-text">界</text>
+</svg>

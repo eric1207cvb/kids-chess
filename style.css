@@ -1,0 +1,152 @@
+/* --- 您原有的 CSS 樣式 ... --- */
+body {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f0e6d2; /* 稍微柔和的背景色 */
+  font-family: 'KaiTi', 'STKaiti', 'SimSun', serif;
+}
+
+/* 新增一個主容器來管理佈局 */
+#game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px; /* 元素之間的間距 */
+}
+
+/* 新增的遊戲訊息欄樣式 */
+#game-info {
+    width: 72vmin;
+    padding: 10px 0;
+    font-size: 3.5vmin;
+    font-weight: bold;
+    color: #4a3a2a;
+    background-color: rgba(255, 255, 255, 0.6);
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    min-height: 4.5vmin; /* 確保有內容時高度一致 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* (新增) 包裹按鈕的容器樣式 */
+#button-controls {
+    display: flex;
+    gap: 16px; /* 讓按鈕之間有間距 */
+}
+
+/* 重新開始按鈕樣式 */
+#restart-button {
+    padding: 10px 25px;
+    font-size: 3vmin;
+    font-family: inherit;
+    font-weight: bold;
+    color: #fff;
+    background-color: #c0392b;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: all 0.2s ease;
+}
+
+#restart-button:hover {
+    background-color: #a93125;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+/* 悔棋按鈕樣式 */
+#undo-button {
+    padding: 10px 25px;
+    font-size: 3vmin;
+    font-family: inherit;
+    font-weight: bold;
+    color: #fff;
+    background-color: #3498db; /* 使用不同的顏色區分 */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: all 0.2s ease;
+}
+
+#undo-button:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+/* 按鈕禁用時的樣式 */
+#undo-button:disabled {
+    background-color: #95a5a6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+#xiangqi-board {
+  width: 72vmin; 
+  height: 80vmin;
+  background-image: url('board.svg'), url('https://www.transparenttextures.com/patterns/wood-pattern.png');
+  background-size: cover, auto;
+  background-position: center, center;
+  background-repeat: no-repeat, repeat;
+  background-color: #d3b890;
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  grid-template-rows: repeat(10, 1fr);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.piece {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 88%; 
+  height: 88%;
+  justify-self: center;
+  align-self: center;
+  border-radius: 50%;
+  font-size: 6vmin;
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+  border-bottom: 4px solid rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: all 0.15s ease-out;
+}
+
+.piece:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    border-bottom-width: 6px;
+}
+
+.black-piece {
+    background-color: #333;
+    color: #fff;
+    border-top: 1px solid #777;
+}
+
+.red-piece {
+    background-color: #c0392b;
+    color: #fff;
+    border-top: 1px solid #ff796a;
+}
+
+.piece.selected {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 0 0 4px #f1c40f, 0 6px 12px rgba(0,0,0,0.3);
+}
+
+.square {
+    width: 100%;
+    height: 100%;
+}
