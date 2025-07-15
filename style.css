@@ -150,3 +150,14 @@ body {
     width: 100%;
     height: 100%;
 }
+
+/* (新增) 合法移動提示點的樣式 */
+.valid-move-dot {
+    width: 40%;
+    height: 40%;
+    background-color: rgba(46, 204, 113, 0.7); /* 帶透明度的綠色 */
+    border-radius: 50%;
+    justify-self: center;
+    align-self: center;
+    pointer-events: none; /* 讓滑鼠可以點穿這個提示點，去點到棋子或格子 */
+}
