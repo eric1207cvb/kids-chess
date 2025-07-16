@@ -1,4 +1,4 @@
-// script.js (最終合併修正版)
+// script.js (最終合併修正版 V2)
 
 // 教學功能物件
 const tutorial = {
@@ -30,7 +30,7 @@ const tutorial = {
         const fromCol = piece.col;
         for (let toRow = 0; toRow < 10; toRow++) {
             for (let toCol = 0; toCol < 9; toCol++) {
-                const moveResult = game.isMoveLegal(fromRow, fromCol, toRow, toCol);
+                const moveResult = game.isMoveLegal(fromRow, fromCol, toRow, toCol, game.state.boardData);
                 if (moveResult.legal) {
                     const targetSquare = game.elements.board.querySelector(`[data-row='${toRow}'][data-col='${toCol}']`);
                     if (targetSquare) {
@@ -50,7 +50,6 @@ const tutorial = {
 
 // 主要遊戲物件
 const game = {
-    // --- 遊戲狀態 (State) ---
     state: {
         boardData: [],
         selectedPiece: null,
@@ -69,34 +68,29 @@ const game = {
             ['', '', '', '', '', '', '', '', ''],
             ['俥', '傌', '相', '仕', '帥', '仕', '相', '傌', '俥']
         ],
-        // ★★★ 修正 1：新增 AI 相關狀態 ★★★
-        aiIsEnabled: false, // 預設為雙人模式
-        aiIsRed: false      // AI 預設執黑
+        aiIsEnabled: false,
+        aiIsRed: false
     },
-
-    // --- DOM 元素 ---
     elements: {
         board: document.getElementById('xiangqi-board'),
         info: document.getElementById('game-info'),
         restartBtn: document.getElementById('restart-button'),
         undoBtn: document.getElementById('undo-button'),
-        // ★★★ 修正 2：新增模式選擇按鈕 ★★★
         pvpBtn: document.getElementById('pvp-button'),
         pveBtn: document.getElementById('pve-button')
     },
 
-    // --- 初始化函式 ---
     init() {
         this.resetGame();
         this.elements.board.addEventListener('click', this.handleBoardClick.bind(this));
         this.elements.restartBtn.addEventListener('click', this.resetGame.bind(this));
         this.elements.undoBtn.addEventListener('click', this.undoMove.bind(this));
-        // ★★★ 修正 3：新增按鈕的事件監聽 ★★★
         this.elements.pvpBtn.addEventListener('click', this.startPvpMode.bind(this));
         this.elements.pveBtn.addEventListener('click', this.startAiMode.bind(this));
     },
     
     resetGame() {
+        console.log("1. 正在執行 resetGame...");
         this.state.boardData = this.state.initialBoard.map(row => [...row]);
         this.state.selectedPiece = null;
         this.state.isRedTurn = true;
@@ -121,7 +115,7 @@ const game = {
                 this.selectPiece(null);
                 return;
             }
-            const moveResult = this.isMoveLegal(fromRow, fromCol, row, col);
+            const moveResult = this.isMoveLegal(fromRow, fromCol, row, col, this.state.boardData);
             if (moveResult.legal) {
                 this.movePiece(fromRow, fromCol, row, col);
             } else if (pieceChar && this.isRedPiece(pieceChar) === this.state.isRedTurn) {
@@ -162,8 +156,6 @@ const game = {
         tutorial.clearHighlights();
         this.renderBoard();
         this.checkGameState();
-
-        // ★★★ 修正 4：新增的 AI 觸發邏輯 ★★★
         if (this.state.aiIsEnabled && this.state.isRedTurn === this.state.aiIsRed && !this.state.isGameOver) {
             setTimeout(() => this.triggerAI(), 500);
         }
@@ -180,9 +172,8 @@ const game = {
         tutorial.clearHighlights();
         this.renderBoard();
         this.checkGameState();
-    }, // ★★★ 修正 5：補上這裡缺少的逗號 ★★★
+    },
 
-    // ★★★ 修正 6：新增完整的 AI 相關函式 ★★★
     triggerAI() {
         if (this.state.isGameOver) return;
         console.log("輪到 AI，正在呼叫 AI 大腦...");
@@ -211,20 +202,19 @@ const game = {
         this.state.aiIsRed = false;
         this.resetGame();
         this.updateInfo("人機對戰：請紅方先行");
-    }, // ★★★ 修正 5：補上這裡缺少的逗號 ★★★
+    },
 
-    // --- 規則判斷函式 (裁判) ---
-    isMoveLegal(fromRow, fromCol, toRow, toCol) {
-        if (!this.isValidMove(fromRow, fromCol, toRow, toCol, this.state.boardData)) {
+    isMoveLegal(fromRow, fromCol, toRow, toCol, board) {
+        if (!this.isValidMove(fromRow, fromCol, toRow, toCol, board)) {
             return { legal: false, reason: 'basic' };
         }
-        const tempBoard = this.state.boardData.map(row => [...row]);
+        const tempBoard = board.map(row => [...row]);
         tempBoard[toRow][toCol] = tempBoard[fromRow][fromCol];
         tempBoard[fromRow][fromCol] = '';
         if (this.isKingFacingKing(tempBoard)) {
             return { legal: false, reason: 'king_face' };
         }
-        const movingPlayerIsRed = this.isRedPiece(this.state.boardData[fromRow][fromCol]);
+        const movingPlayerIsRed = this.isRedPiece(board[fromRow][fromCol]);
         if (this.isKingInCheck(movingPlayerIsRed, tempBoard)) {
             return { legal: false, reason: 'self_check' };
         }
@@ -251,12 +241,51 @@ const game = {
     },
     isKingInCheck(kingIsRed, board) { const kingChar = kingIsRed ? '帥' : '將'; let kingPos = null; for (let r = 0; r < 10; r++) for (let c = 0; c < 9; c++) if (board[r][c] === kingChar) kingPos = { r, c }; if (!kingPos) return false; for (let r = 0; r < 10; r++) { for (let c = 0; c < 9; c++) { const piece = board[r][c]; if (piece && this.isRedPiece(piece) !== kingIsRed) { if (this.isValidMove(r, c, kingPos.r, kingPos.c, board)) return true; } } } return false; },
     isKingFacingKing(board) { const kings = []; for (let r = 0; r < 10; r++) for (let c = 0; c < 9; c++) if (board[r][c] === '將' || board[r][c] === '帥') kings.push({ r, c }); if (kings.length < 2) return false; const [k1, k2] = kings; if (k1.c !== k2.c) return false; for (let r = Math.min(k1.r, k2.r) + 1; r < Math.max(k1.r, k2.r); r++) if (board[r][k1.c]) return false; return true; },
-    hasAnyValidMoves(isRed, board) { for (let r = 0; r < 10; r++) { for (let c = 0; c < 9; c++) { if (board[r][c] && this.isRedPiece(board[r][c]) === isRed) { for (let tr = 0; tr < 10; tr++) { for (let tc = 0; tc < 9; tc++) { if (this.isMoveLegal(r, c, tr, tc).legal) return true; } } } } } return false; },
-    checkGameState() { const opponentIsRed = this.state.isRedTurn; const inCheck = this.isKingInCheck(opponentIsRed, this.state.boardData); const hasMoves = this.hasAnyValidMoves(opponentIsRed, this.state.boardData); if (!hasMoves) { this.state.isGameOver = true; this.updateInfo(inCheck ? (opponentIsRed ? '黑方獲勝 (絕殺)!' : '紅方獲勝 (絕殺)!') : '和局 (困斃)!'); } else if (inCheck) { this.updateInfo(opponentIsRed ? '紅方將軍！' : '黑方將軍！'); } else { this.updateInfo(this.state.isRedTurn ? '輪到紅方' : '輪到黑方'); } },
+    hasAnyValidMoves(isRed, board) {
+        for (let r = 0; r < 10; r++) {
+            for (let c = 0; c < 9; c++) {
+                if (board[r][c] && this.isRedPiece(board[r][c]) === isRed) {
+                    for (let tr = 0; tr < 10; tr++) {
+                        for (let tc = 0; tc < 9; tc++) {
+                            if (this.isMoveLegal(r, c, tr, tc, board).legal) return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    },
+    checkGameState() { const opponentIsRed = this.state.isRedTurn; const inCheck = this.isKingInCheck(opponentIsRed, this.state.boardData); const hasMoves = this.hasAnyValidMoves(opponentIsRed, this.state.boardData); if (!hasMoves) { this.state.isGameOver = true; this.updateInfo(inCheck ? (opponentIsRed ? '黑方獲勝 (絕殺)!' : '紅方獲勝 (絕殺)!') : '和局 (困斃)!'); } else if (inCheck) { this.updateInfo(this.state.isRedTurn ? '黑方將軍！' : '紅方將軍！'); } else { this.updateInfo(this.state.isRedTurn ? '輪到紅方' : '輪到黑方'); } },
     isRedPiece(char) { return ['帥', '仕', '相', '俥', '傌', '炮', '兵'].includes(char); },
     updateInfo(message) { this.elements.info.textContent = message; this.elements.info.style.color = ''; },
     showWarning(reason) { const warningMessages = { self_check: '無效移動：帥(將)會被將軍！', king_face: '無效移動：王不見王！' }; const message = warningMessages[reason]; if (!message) return; const currentStatusMessage = this.elements.info.textContent; this.elements.info.textContent = message; this.elements.info.style.color = '#e74c3c'; setTimeout(() => { if (this.elements.info.textContent === message) { this.elements.info.textContent = currentStatusMessage; this.elements.info.style.color = ''; } }, 2000); },
-    renderBoard() { this.elements.board.innerHTML = ''; this.state.boardData.forEach((row, rowIndex) => { row.forEach((pieceChar, colIndex) => { const square = document.createElement('div'); square.className = 'square'; square.dataset.row = rowIndex; square.dataset.col = colIndex; square.style.gridRowStart = rowIndex + 1; square.style.gridColumnStart = colIndex + 1; if (pieceChar) { const piece = document.createElement('div'); piece.className = 'piece'; piece.innerText = pieceChar; piece.classList.add(this.isRedPiece(pieceChar) ? 'red-piece' : 'black-piece'); if (this.state.selectedPiece && this.state.selectedPiece.row === rowIndex && this.state.selectedPiece.col === colIndex) { piece.classList.add('selected'); } square.appendChild(piece); } this.elements.board.appendChild(square); }); }); this.elements.undoBtn.disabled = this.state.moveHistory.length === 0; }
+    renderBoard() {
+        console.log("2. 正在執行 renderBoard...");
+        this.elements.board.innerHTML = '';
+        console.log("3. 準備渲染的棋盤資料:", this.state.boardData);
+        this.state.boardData.forEach((row, rowIndex) => {
+            row.forEach((pieceChar, colIndex) => {
+                const square = document.createElement('div');
+                square.className = 'square';
+                square.dataset.row = rowIndex;
+                square.dataset.col = colIndex;
+                square.style.gridRowStart = rowIndex + 1;
+                square.style.gridColumnStart = colIndex + 1;
+                if (pieceChar) {
+                    const piece = document.createElement('div');
+                    piece.className = 'piece';
+                    piece.innerText = pieceChar;
+                    piece.classList.add(this.isRedPiece(pieceChar) ? 'red-piece' : 'black-piece');
+                    if (this.state.selectedPiece && this.state.selectedPiece.row === rowIndex && this.state.selectedPiece.col === colIndex) {
+                        piece.classList.add('selected');
+                    }
+                    square.appendChild(piece);
+                }
+                this.elements.board.appendChild(square);
+            });
+        });
+        this.elements.undoBtn.disabled = this.state.moveHistory.length === 0;
+    }
 };
 
 // --- 遊戲啟動 ---
