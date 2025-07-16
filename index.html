@@ -8,20 +8,34 @@
 </head>
 <body>
     
-    <main id="game-container">
-        
-        <header id="game-info" aria-live="polite">雙人對弈：紅方先行</header>
-        
+    <div id="main-menu-overlay">
+        <div id="menu-content">
+            <h1>象棋 AI 對戰</h1>
+            <p>請選擇遊戲模式</p>
+            <div id="menu-buttons">
+                <button id="menu-btn-pvp">雙人對弈</button>
+                <button id="menu-btn-normal">一般模式</button>
+                <button id="menu-btn-expert">專家模式</button>
+            </div>
+        </div>
+    </div>
+    
+    <main id="game-container" style="display: none;">
+        <header id="game-info" aria-live="polite">遊戲開始</header>
         <div id="xiangqi-board"></div>
-        
         <footer id="button-controls">
-            <button id="pvp-button">雙人對弈</button>
-            <button id="pve-button">人機對戰</button>
             <button id="undo-button">悔棋</button>
             <button id="restart-button">重新開始</button>
+            <button id="back-to-menu-button">回到選單</button>
         </footer>
-
     </main>
+
+    <div id="game-over-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h2 id="modal-message"></h2>
+            <button id="modal-restart-button">再玩一局</button>
+        </div>
+    </div>
     
     <script src="AI.js"></script>
     <script src="script.js"></script>
