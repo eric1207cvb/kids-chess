@@ -3,19 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>象棋專案 (悔棋+教學功能版)</title>
+    <title>象棋 AI 對戰</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="game-container">
-        <div id="game-info">紅方先行</div>
+    
+    <main id="game-container">
+        
+        <header id="game-info" aria-live="polite">雙人對弈：紅方先行</header>
+        
         <div id="xiangqi-board"></div>
         
-        <div id="button-controls">
+        <footer id="button-controls">
+            <button id="pvp-button">雙人對弈</button>
+            <button id="pve-button">人機對戰</button>
             <button id="undo-button">悔棋</button>
             <button id="restart-button">重新開始</button>
-        </div>
-    </div>
+        </footer>
+
+    </main>
+    
+    <script src="AI.js"></script>
     <script src="script.js"></script>
+    
 </body>
 </html>
