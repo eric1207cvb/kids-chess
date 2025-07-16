@@ -1,109 +1,112 @@
-/* --- 您原有的 CSS 樣式 ... --- */
+/* style.css (最終美化修正版) */
+
+:root {
+  --page-bg: #f4f4f4; /* 頁面背景色，柔和的淺灰 */
+  --board-bg: #e9d9c4; /* 棋盤背景色 */
+  --primary-red: #c14343; /* 紅方棋子和按鈕的主色 */
+  --primary-red-hover: #a53a3a;
+  --dark-piece-bg: #3a3a3c; /* 黑方棋子的主色 */
+  --light-text: #ffffff; /* 亮色文字，用在棋子和按鈕上 */
+  --dark-text: #2c2c2e;  /* 深色文字，用在訊息欄 */
+  --button-green: #34a853; /* 其他功能按鈕的顏色 */
+  --button-green-hover: #2c8f45;
+}
+
 body {
   margin: 0;
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: #f0e6d2; /* 稍微柔和的背景色 */
-  font-family: 'KaiTi', 'STKaiti', 'SimSun', serif;
+  background-color: var(--page-bg);
+  /* 換上更現代、清晰的字體 */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-/* 新增一個主容器來管理佈局 */
 #game-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 16px; /* 元素之間的間距 */
+    gap: 20px;
+    padding: 20px 10px;
 }
 
-/* 新增的遊戲訊息欄樣式 */
+/* ★★★ 已修正此區塊，以容納多行文字 ★★★ */
 #game-info {
-    width: 72vmin;
-    padding: 10px 0;
-    font-size: 3.5vmin;
-    font-weight: bold;
-    color: #4a3a2a;
-    background-color: rgba(255, 255, 255, 0.6);
-    border-radius: 8px;
+    width: 90vmin;
+    max-width: 450px;
+    padding: 12px 18px;
+    font-size: 3.2vmin;
+    font-weight: 500;
+    line-height: 1.5; /* 設定合適的行高，讓多行文字不擁擠 */
+    color: var(--dark-text);
+    background-color: #ffffff;
+    border-radius: 12px;
     text-align: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    min-height: 4.5vmin; /* 確保有內容時高度一致 */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    min-height: 2.5em; /* 使用 em 單位確保至少能容納約兩行文字，高度更靈活 */
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-/* (新增) 包裹按鈕的容器樣式 */
-#button-controls {
-    display: flex;
-    gap: 16px; /* 讓按鈕之間有間距 */
-}
-
-/* 重新開始按鈕樣式 */
-#restart-button {
-    padding: 10px 25px;
-    font-size: 3vmin;
-    font-family: inherit;
-    font-weight: bold;
-    color: #fff;
-    background-color: #c0392b;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    transition: all 0.2s ease;
-}
-
-#restart-button:hover {
-    background-color: #a93125;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-}
-
-/* 悔棋按鈕樣式 */
-#undo-button {
-    padding: 10px 25px;
-    font-size: 3vmin;
-    font-family: inherit;
-    font-weight: bold;
-    color: #fff;
-    background-color: #3498db; /* 使用不同的顏色區分 */
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    transition: all 0.2s ease;
-}
-
-#undo-button:hover {
-    background-color: #2980b9;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-}
-
-/* 按鈕禁用時的樣式 */
-#undo-button:disabled {
-    background-color: #95a5a6;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: all 0.2s ease-in-out; /* 高度變化時有過渡動畫 */
 }
 
 #xiangqi-board {
-  width: 72vmin; 
-  height: 80vmin;
-  background-image: url('board.svg'), url('https://www.transparenttextures.com/patterns/wood-pattern.png');
-  background-size: cover, auto;
-  background-position: center, center;
-  background-repeat: no-repeat, repeat;
-  background-color: #d3b890;
+  width: 90vmin; 
+  height: 100vmin;
+  max-width: 450px;
+  max-height: 500px;
+  background-image: url('board.svg');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: var(--board-bg);
   display: grid;
   grid-template-columns: repeat(9, 1fr);
   grid-template-rows: repeat(10, 1fr);
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1), inset 0 0 10px rgba(0,0,0,0.05);
 }
+
+#button-controls {
+    width: 90vmin;
+    max-width: 450px;
+    display: grid; /* ★★★ 將 display 改為 grid ★★★ */
+    grid-template-columns: 1fr 1fr; /* ★★★ 關鍵：建立兩欄，每欄佔據一份可用空間 ★★★ */
+    gap: 15px; /* 按鈕之間的間距 */
+}
+
+/* style.css */
+
+/* 所有按鈕的通用樣式，不再需要 flex 相關屬性 */
+#button-controls button {
+    /* flex-grow 和 min-width 已移除 */
+    padding: 14px 10px;
+    font-size: 3.5vmin;
+    font-weight: 500;
+    color: var(--light-text);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: #6c757d;
+}
+
+#button-controls button:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
+#button-controls button:active {
+    transform: translateY(0);
+    filter: brightness(0.9);
+}
+
+#pve-button { background-color: var(--button-green); }
+#pvp-button { background-color: #0d6efd; }
+#restart-button { background-color: #dc3545; }
+#undo-button { background-color: #6c757d; }
+#undo-button:disabled { background-color: #adb5bd; cursor: not-allowed; }
 
 .piece {
   display: flex;
@@ -118,46 +121,37 @@ body {
   font-weight: bold;
   cursor: pointer;
   user-select: none;
-  border-bottom: 4px solid rgba(0, 0, 0, 0.2);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
   transition: all 0.15s ease-out;
 }
 
 .piece:hover {
     transform: translateY(-4px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-    border-bottom-width: 6px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
 }
 
 .black-piece {
-    background-color: #333;
-    color: #fff;
-    border-top: 1px solid #777;
+    background-color: var(--dark-piece-bg);
+    color: var(--light-text);
 }
 
 .red-piece {
-    background-color: #c0392b;
-    color: #fff;
-    border-top: 1px solid #ff796a;
+    background-color: var(--primary-red);
+    color: var(--light-text);
 }
 
 .piece.selected {
-    transform: translateY(-4px) scale(1.05);
-    box-shadow: 0 0 0 4px #f1c40f, 0 6px 12px rgba(0,0,0,0.3);
+    transform: translateY(-6px) scale(1.05);
+    box-shadow: 0 0 0 4px #ffc107, 0 10px 20px rgba(0,0,0,0.3);
 }
 
-.square {
-    width: 100%;
-    height: 100%;
-}
-
-/* (新增) 合法移動提示點的樣式 */
 .valid-move-dot {
-    width: 40%;
-    height: 40%;
-    background-color: rgba(46, 204, 113, 0.7); /* 帶透明度的綠色 */
+    width: 35%;
+    height: 35%;
+    background-color: rgba(46, 204, 113, 0.8);
     border-radius: 50%;
     justify-self: center;
     align-self: center;
-    pointer-events: none; /* 讓滑鼠可以點穿這個提示點，去點到棋子或格子 */
+    pointer-events: none;
+    box-shadow: 0 0 5px 2px rgba(255,255,255,0.5);
 }
