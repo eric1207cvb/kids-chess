@@ -14,15 +14,17 @@
             <p>請選擇遊戲模式</p>
             <div id="menu-buttons">
                 <button id="menu-btn-pvp">雙人對弈</button>
+                <button id="menu-btn-baby">寶寶模式</button>
                 <button id="menu-btn-normal">一般模式</button>
-                <button id="menu-btn-expert">專家模式</button>
             </div>
         </div>
     </div>
     
     <main id="game-container" style="display: none;">
         <header id="game-info" aria-live="polite">遊戲開始</header>
-        <div id="xiangqi-board"></div>
+        <div id="xiangqi-board">
+            <img src="board.svg" class="board-background-svg" alt="象棋棋盤">
+        </div>
         <footer id="button-controls">
             <button id="undo-button">悔棋</button>
             <button id="restart-button">重新開始</button>

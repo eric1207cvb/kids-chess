@@ -7,17 +7,58 @@ const tutorial = {
 
 const game = {
     state:{boardData:[],selectedPiece:null,isRedTurn:true,isGameOver:false,moveHistory:[],initialBoard:[['車','馬','象','士','將','士','象','馬','車'],['','','','','','','','',''],['','砲','','','','','','砲',''],['卒','','卒','','卒','','卒','','卒'],['','','','','','','','',''],['','','','','','','','',''],['兵','','兵','','兵','','兵','','兵'],['','炮','','','','','','炮',''],['','','','','','','','',''],['俥','傌','相','仕','帥','仕','相','傌','俥']],aiIsEnabled:false,aiIsRed:false,aiDifficulty:'normal'},
-    elements:{board:document.getElementById('xiangqi-board'),info:document.getElementById('game-info'),restartBtn:document.getElementById('restart-button'),undoBtn:document.getElementById('undo-button'),mainMenu:document.getElementById('main-menu-overlay'),gameContainer:document.getElementById('game-container'),btnPvp:document.getElementById('menu-btn-pvp'),btnNormal:document.getElementById('menu-btn-normal'),btnExpert:document.getElementById('menu-btn-expert'),backToMenuBtn:document.getElementById('back-to-menu-button'),modal:document.getElementById('game-over-modal'),modalMessage:document.getElementById('modal-message'),modalRestartBtn:document.getElementById('modal-restart-button')},
+    elements:{board:document.getElementById('xiangqi-board'),info:document.getElementById('game-info'),restartBtn:document.getElementById('restart-button'),undoBtn:document.getElementById('undo-button'),mainMenu:document.getElementById('main-menu-overlay'),gameContainer:document.getElementById('game-container'),btnPvp:document.getElementById('menu-btn-pvp'),btnBaby:document.getElementById('menu-btn-baby'),btnNormal:document.getElementById('menu-btn-normal'),backToMenuBtn:document.getElementById('back-to-menu-button'),modal:document.getElementById('game-over-modal'),modalMessage:document.getElementById('modal-message'),modalRestartBtn:document.getElementById('modal-restart-button')},
     boundEventHandlers:{},
     bindEventHandlers(){this.boundEventHandlers.handleBoardClick=this.handleBoardClick.bind(this);this.boundEventHandlers.resetGame=this.resetGame.bind(this);this.boundEventHandlers.undoMove=this.undoMove.bind(this);this.boundEventHandlers.showMainMenu=this.showMainMenu.bind(this)},
     setupInGameListeners(){this.elements.board.addEventListener('click',this.boundEventHandlers.handleBoardClick);this.elements.restartBtn.addEventListener('click',this.boundEventHandlers.resetGame);this.elements.undoBtn.addEventListener('click',this.boundEventHandlers.undoMove);this.elements.backToMenuBtn.addEventListener('click',this.boundEventHandlers.showMainMenu)},
     cleanupInGameListeners(){this.elements.board.removeEventListener('click',this.boundEventHandlers.handleBoardClick);this.elements.restartBtn.removeEventListener('click',this.boundEventHandlers.resetGame);this.elements.undoBtn.removeEventListener('click',this.boundEventHandlers.undoMove);this.elements.backToMenuBtn.removeEventListener('click',this.boundEventHandlers.showMainMenu)},
-    init(){this.bindEventHandlers();this.elements.btnPvp.addEventListener('click',()=>this.startGame('pvp'));this.elements.btnNormal.addEventListener('click',()=>this.startGame('normal'));this.elements.btnExpert.addEventListener('click',()=>this.startGame('expert'));this.elements.modalRestartBtn.addEventListener('click',()=>{this.elements.modal.style.display='none';this.resetGame()})},
-    startGame(mode){this.elements.mainMenu.style.display='none';this.elements.gameContainer.style.display='flex';if(mode==='pvp'){this.state.aiIsEnabled=false}else{this.state.aiIsEnabled=true;this.state.aiIsRed=false;this.state.aiDifficulty=mode}this.setupInGameListeners();this.resetGame()},
+    init(){this.bindEventHandlers();this.elements.btnPvp.addEventListener('click',()=>this.startGame('pvp'));this.elements.btnBaby.addEventListener('click',()=>this.startGame('normal'));this.elements.btnNormal.addEventListener('click',()=>this.startGame('expert'));this.elements.modalRestartBtn.addEventListener('click',()=>{this.elements.modal.style.display='none';this.resetGame()})},
+    startGame(mode){this.elements.mainMenu.style.display='none';this.elements.gameContainer.style.display='flex';if(mode==='pvp'){this.state.aiIsEnabled=false;this.state.aiDifficulty='pvp';}else{this.state.aiIsEnabled=true;this.state.aiIsRed=false;this.state.aiDifficulty=mode}this.setupInGameListeners();this.resetGame()},
     resetGame(){this.state.boardData=this.state.initialBoard.map(row=>[...row]);this.state.selectedPiece=null;this.state.isRedTurn=true;this.state.isGameOver=false;this.state.moveHistory=[];this.renderBoard();this.checkGameState();tutorial.clearHighlights()},
     handleBoardClick(event){if(this.state.isGameOver)return;const square=event.target.closest('.square');if(!square)return;const row=parseInt(square.dataset.row);const col=parseInt(square.dataset.col);const pieceChar=this.state.boardData[row][col];if(this.state.selectedPiece){const fromRow=this.state.selectedPiece.row;const fromCol=this.state.selectedPiece.col;if(fromRow===row&&fromCol===col){this.selectPiece(null);return}const moveResult=this.isMoveLegal(fromRow,fromCol,row,col,this.state.boardData);if(moveResult.legal){this.movePiece(fromRow,fromCol,row,col)}else if(pieceChar&&this.isRedPiece(pieceChar)===this.state.isRedTurn){this.selectPiece(row,col)}else{this.showWarning(moveResult.reason)}}else if(pieceChar&&this.isRedPiece(pieceChar)===this.state.isRedTurn){this.selectPiece(row,col)}},
-    selectPiece(row,col){this.elements.board.classList.toggle('piece-selected-mode',row!==null);if(row===null){this.state.selectedPiece=null}else{this.state.selectedPiece={row,col}}this.renderBoard();tutorial.clearHighlights();if(row!==null){tutorial.showLegalMoves(this.state.selectedPiece);const description=tutorial.getPieceDescription(this.state.selectedPiece);if(description){this.updateInfo(description)}}else{this.checkGameState()}},
-    movePiece(fromRow,fromCol,toRow,toCol){const movedPiece=this.state.boardData[fromRow][fromCol];const capturedPiece=this.state.boardData[toRow][toCol];this.state.moveHistory.push({fromRow,fromCol,toRow,toCol,movedPiece,capturedPiece});this.state.boardData[toRow][toCol]=movedPiece;this.state.boardData[fromRow][fromCol]='';this.state.selectedPiece=null;this.state.isRedTurn=!this.state.isRedTurn;this.renderBoard();this.checkGameState();if(this.state.aiIsEnabled&&this.state.isRedTurn===this.state.aiIsRed&&!this.state.isGameOver){setTimeout(()=>this.triggerAI(),500)}},
+    
+    selectPiece(row, col) {
+        this.elements.board.classList.toggle('piece-selected-mode', row !== null);
+        if (row === null) {
+            this.state.selectedPiece = null;
+        } else {
+            this.state.selectedPiece = { row, col };
+        }
+        this.renderBoard();
+        tutorial.clearHighlights();
+
+        if (row !== null) {
+            // 【修改】只在非 'expert' (也就是你設定的 "一般模式") 的難度下顯示綠色提示
+            if (this.state.aiDifficulty !== 'expert') {
+                tutorial.showLegalMoves(this.state.selectedPiece);
+            }
+            
+            const description = tutorial.getPieceDescription(this.state.selectedPiece);
+            if (description) {
+                this.updateInfo(description);
+            }
+        } else {
+            this.checkGameState();
+        }
+    },
+
+    movePiece(fromRow, fromCol, toRow, toCol) {
+        const movedPiece = this.state.boardData[fromRow][fromCol];
+        const capturedPiece = this.state.boardData[toRow][toCol];
+        this.state.moveHistory.push({ fromRow, fromCol, toRow, toCol, movedPiece, capturedPiece });
+        this.state.boardData[toRow][toCol] = movedPiece;
+        this.state.boardData[fromRow][fromCol] = '';
+        this.state.selectedPiece = null;
+        this.elements.board.classList.remove('piece-selected-mode');
+        tutorial.clearHighlights();
+        this.state.isRedTurn = !this.state.isRedTurn;
+        this.renderBoard();
+        this.checkGameState();
+        if (this.state.aiIsEnabled && this.state.isRedTurn === this.state.aiIsRed && !this.state.isGameOver) {
+            setTimeout(() => this.triggerAI(), 500);
+        }
+    },
+
     undoMove(){if(this.state.isGameOver||this.state.moveHistory.length===0)return;const lastMove=this.state.moveHistory.pop();this.state.boardData[lastMove.fromRow][lastMove.fromCol]=lastMove.movedPiece;this.state.boardData[lastMove.toRow][lastMove.toCol]=lastMove.capturedPiece;this.state.isRedTurn=!this.state.isRedTurn;this.state.isGameOver=false;this.selectPiece(null)},
     triggerAI(){if(this.state.isGameOver)return;const bestMove=chessAI.findBestMove(this.state.boardData,this.state.aiIsRed,this.isMoveLegal.bind(this),this.state.aiDifficulty);if(bestMove){this.movePiece(bestMove.fromRow,bestMove.fromCol,bestMove.toRow,bestMove.toCol)}else{console.log("AI 找不到合法的棋步，遊戲可能已結束。")}},
     showMainMenu(){this.cleanupInGameListeners();this.elements.gameContainer.style.display='none';this.elements.mainMenu.style.display='flex'},
@@ -30,7 +71,30 @@ const game = {
     isRedPiece(char){return['帥','仕','相','俥','傌','炮','兵'].includes(char)},
     updateInfo(message){this.elements.info.textContent=message},
     showWarning(reason){const messages={self_check:'無效移動：帥(將)會被將軍！',king_face:'無效移動：王不見王！'};const msg=messages[reason];if(msg){this.updateInfo(msg)}},
-    renderBoard(){this.elements.board.innerHTML='';this.state.boardData.forEach((row,rowIndex)=>{row.forEach((pieceChar,colIndex)=>{const square=document.createElement('div');square.className='square';square.dataset.row=rowIndex;square.dataset.col=colIndex;square.style.gridRowStart=rowIndex+1;square.style.gridColumnStart=colIndex+1;if(pieceChar){const piece=document.createElement('div');piece.className=`piece ${this.isRedPiece(pieceChar)?'red-piece':'black-piece'}`;piece.innerText=pieceChar;if(this.state.selectedPiece&&this.state.selectedPiece.row===rowIndex&&this.state.selectedPiece.col===colIndex){piece.classList.add('selected')}square.appendChild(piece)}this.elements.board.appendChild(square)})});this.elements.undoBtn.disabled=this.state.moveHistory.length===0},
+    renderBoard() {
+        this.elements.board.querySelectorAll('.square').forEach(sq => sq.remove());
+        this.state.boardData.forEach((row, rowIndex) => {
+            row.forEach((pieceChar, colIndex) => {
+                const square = document.createElement('div');
+                square.className = 'square';
+                square.dataset.row = rowIndex;
+                square.dataset.col = colIndex;
+                square.style.gridRowStart = rowIndex + 1;
+                square.style.gridColumnStart = colIndex + 1;
+                if (pieceChar) {
+                    const piece = document.createElement('div');
+                    piece.className = `piece ${this.isRedPiece(pieceChar) ? 'red-piece' : 'black-piece'}`;
+                    piece.innerText = pieceChar;
+                    if (this.state.selectedPiece && this.state.selectedPiece.row === rowIndex && this.state.selectedPiece.col === colIndex) {
+                        piece.classList.add('selected');
+                    }
+                    square.appendChild(piece);
+                }
+                this.elements.board.appendChild(square);
+            });
+        });
+        this.elements.undoBtn.disabled = this.state.moveHistory.length === 0;
+    },
     showGameOverModal(message){this.elements.modalMessage.textContent=message;this.elements.modal.style.display='flex'}
 };
 
